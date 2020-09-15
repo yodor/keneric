@@ -1,0 +1,15 @@
+0.1 / 2015-12-04
+
+Initial release
+
+0.2 / 2015-12-20
+
+Drop UseThisPicture.png extension -> "/keneric/UseThisPicture"
+Add mime to the script call arguments: stripPicture <path> <mime>
+Fix uninitialized ‘parent’ warning
+
+0.3 / 2015-01-02
+
+Unique name for the thumbnail picture
+Script call arguments are: stripPicture <path> <mime> <thumbnail>
+Thumbnail plugin is making the 'keneric' directory

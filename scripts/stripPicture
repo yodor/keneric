@@ -1,0 +1,20 @@
+#!/bin/sh
+# Usage: stripPicture fullname mime exportPicture
+
+fullname="$1"
+mime="$2"
+exportPicture="$3"
+
+# thumbnail options by mime type
+case "$mime" in
+
+      something/x-something)
+      yourcommand "$fullname" "$exportPicture"
+      exit
+      ;;
+
+      *)
+#     case trap
+      exit
+      
+esac

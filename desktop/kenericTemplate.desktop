@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+Name=Template Documents (Keneric)
+Name[x-test]=xxTemplate Documentsxx
+
+X-KDE-ServiceTypes=ThumbCreator
+MimeType=something/x-something;
+
+X-KDE-Library=keneric
+CacheThumbnail=true
