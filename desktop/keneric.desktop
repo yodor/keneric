@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=STL 3D model (keneric)
+X-KDE-ServiceTypes=ThumbCreator
+MimeType=model/stl;
+X-KDE-Library=keneric
+CacheThumbnail=true

@@ -1,0 +1,25 @@
+#!/bin/bash
+# Usage: kenericProcess fullname mime exportPicture width height
+
+fullname="$1"
+mime="$2"
+exportPicture="$3"
+width="$4"
+height="$5"
+
+# thumbnail options by mime type
+case "$mime" in
+
+      model/stl)
+      echo  "import (\"$fullname\");" > $exportPicture.scad
+      openscad --viewall --imgsize=$width,$height -o $exportPicture.png $exportPicture.scad
+      mv $exportPicture.png $exportPicture
+      rm $exportPicture.scad
+      exit
+      ;;
+
+      *)
+#     case trap
+      exit
+
+esac

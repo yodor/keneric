@@ -13,3 +13,11 @@ Fix uninitialized ‘parent’ warning
 Unique name for the thumbnail picture
 Script call arguments are: stripPicture <path> <mime> <thumbnail>
 Thumbnail plugin is making the 'keneric' directory
+
+0.4 / 2022-02-16
+
+Rename stripPicture to kenericProcess
+add width and height to arguments passed to kenericProcess
+use width and height passed from Keneric::create
+use img.swap
+

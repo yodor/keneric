@@ -24,6 +24,7 @@
 #include <QMimeDatabase>
 #include <QStandardPaths>
 #include <QCryptographicHash>
+//#include <iostream>
 
 extern "C"
 {
@@ -35,14 +36,20 @@ extern "C"
 
 Keneric::Keneric()
 {
+    //std::cout << "Keneric CTOR" << std::endl;
 }
 
 Keneric::~Keneric()
 {
+    //std::cout << "Keneric DTOR" << std::endl;
 }
 
-bool Keneric::create(const QString& path, int /*width*/, int /*heigth*/, QImage& img)
+bool Keneric::create(const QString& path, int width, int height, QImage& img)
 {
+    
+    //std::cout << "Create Width: " << width << std::endl;
+    //std::cout << "Create Height: " << width << std::endl;
+    
     QMimeDatabase db;
     QMimeType mime = db.mimeTypeForFile(path);
 
@@ -56,9 +63,10 @@ bool Keneric::create(const QString& path, int /*width*/, int /*heigth*/, QImage&
     }
 
     QObject *parent = 0;
-    QString program="stripPicture";
+    QString program="kenericProcess";
     QStringList arguments;
-    arguments << path << mime.name() << protoThumbnail;
+    arguments << path << mime.name() << protoThumbnail << QString("%1").arg(width) << QString("%1").arg(height);
+    
     QProcess *startAction = new QProcess(parent);
     startAction->start(program, arguments);
     startAction->waitForFinished();
@@ -66,7 +74,8 @@ bool Keneric::create(const QString& path, int /*width*/, int /*heigth*/, QImage&
     QFile thumbnailFile(protoThumbnail);
     if (thumbnailFile.exists()){
         QImage previewImage(protoThumbnail);
-        img = previewImage.scaled(256, 256, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        previewImage = previewImage.scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        img.swap(previewImage);
         QFile::remove(protoThumbnail);
     }
     
