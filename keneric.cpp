@@ -24,65 +24,84 @@
 #include <QMimeDatabase>
 #include <QStandardPaths>
 #include <QCryptographicHash>
-//#include <iostream>
+#include <iostream>
 
-extern "C"
-{
-    Q_DECL_EXPORT ThumbCreator *new_creator()
-    {
-        return new Keneric();
-    }
-}
+#include <KPluginFactory>
 
-Keneric::Keneric()
+K_PLUGIN_CLASS_WITH_JSON(Keneric, "keneric.json")
+
+Keneric::Keneric(QObject *parent, const QVariantList &args)
+    : KIO::ThumbnailCreator(parent, args)
 {
-    //std::cout << "Keneric CTOR" << std::endl;
+    std::cout << "Keneric CTOR" << std::endl;
 }
 
 Keneric::~Keneric()
 {
-    //std::cout << "Keneric DTOR" << std::endl;
+    std::cout << "Keneric DTOR" << std::endl;
 }
 
-bool Keneric::create(const QString& path, int width, int height, QImage& img)
+KIO::ThumbnailResult Keneric::create(const KIO::ThumbnailRequest &request)
 {
     
-    //std::cout << "Create Width: " << width << std::endl;
-    //std::cout << "Create Height: " << width << std::endl;
+
     
+    QString path = request.url().toLocalFile();
+    std::string path_string = path.toStdString();
+    //const char* path_cstring = path_string.c_str();
+    int width  = request.targetSize().width() * request.devicePixelRatio();
+    int height = request.targetSize().height() * request.devicePixelRatio();
+
+    //std::cout << "Create Width: " << width << std::endl;
+    //std::cout << "Create Height: " << height << std::endl;
+
+
     QMimeDatabase db;
     QMimeType mime = db.mimeTypeForFile(path);
 
-    QString kenericDirectory((QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/keneric/"));
-    QString md5Hash = QString(QCryptographicHash::hash((path.toUtf8()),QCryptographicHash::Md5).toHex());
-    QString protoThumbnail(kenericDirectory + md5Hash);
-    
+    QString kenericDirectory((QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QString::fromLocal8Bit("/keneric/")));
+
+    QByteArray md5Hash = QCryptographicHash::hash(path.toUtf8(),QCryptographicHash::Md5).toHex();
+
+    QString protoThumbnail(kenericDirectory);
+    protoThumbnail.append(QString::fromLocal8Bit(md5Hash));
+
     QDir directory(kenericDirectory);
     if (!directory.exists()) {
-        directory.mkpath(".");
+        directory.mkpath(QString::fromLocal8Bit("."));
     }
 
-    QObject *parent = 0;
-    QString program="kenericProcess";
+    QString program = QString::fromLocal8Bit("kenericProcess");
+
     QStringList arguments;
-    arguments << path << mime.name() << protoThumbnail << QString("%1").arg(width) << QString("%1").arg(height);
-    
-    QProcess *startAction = new QProcess(parent);
-    startAction->start(program, arguments);
-    startAction->waitForFinished();
-    
+    arguments << path;
+    arguments << mime.name();
+    arguments << protoThumbnail;
+    arguments << QString(QString::fromLocal8Bit("%1")).arg(width);
+    arguments << QString(QString::fromLocal8Bit("%1")).arg(height);
+
+    QProcess *process = new QProcess();
+    process->start(program, arguments);
+    process->waitForFinished();
+
     QFile thumbnailFile(protoThumbnail);
     if (thumbnailFile.exists()){
-        QImage previewImage(protoThumbnail);
-        previewImage = previewImage.scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        img.swap(previewImage);
+        QImage preview(protoThumbnail);
+        preview = preview.scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         QFile::remove(protoThumbnail);
+        return KIO::ThumbnailResult::pass(preview);
     }
-    
-    return !img.isNull();
+    else {
+        std::cout << "File not found: " << protoThumbnail.toStdString() << std::endl;
+    }
+    return KIO::ThumbnailResult::fail();
+
+
 }
 
-ThumbCreator::Flags Keneric::flags() const
-{    
-    return (Flags)(None);
-}
+
+
+#include "keneric.moc"
+#include "moc_keneric.cpp"
+
+

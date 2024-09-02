@@ -17,18 +17,19 @@
 #ifndef KENERIC_THUMBNAILER_H
 #define KENERIC_THUMBNAILER_H
 
-#include <QObject>
-#include <kio/thumbcreator.h>
+#include <KIO/ThumbnailCreator>
 
 
-class Keneric : public QObject, public ThumbCreator
+class Keneric : public KIO::ThumbnailCreator
 {
     Q_OBJECT
+
 public:
-    Keneric();
-    virtual ~Keneric();
-    virtual bool create(const QString& path, int width, int height, QImage& img);
-    virtual Flags flags() const;
+    Keneric(QObject *parent, const QVariantList &args);
+    ~Keneric() override;
+
+    KIO::ThumbnailResult create(const KIO::ThumbnailRequest &request) override;
+
 };
 
 #endif

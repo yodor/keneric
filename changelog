@@ -21,3 +21,6 @@ add width and height to arguments passed to kenericProcess
 use width and height passed from Keneric::create
 use img.swap
 
+1.0.1 / 2024-09-02
+
+Porting to KF6

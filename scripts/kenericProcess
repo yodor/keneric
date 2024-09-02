@@ -12,7 +12,7 @@ case "$mime" in
 
       model/stl)
       echo  "import (\"$fullname\");" > $exportPicture.scad
-      openscad --viewall --imgsize=$width,$height -o $exportPicture.png $exportPicture.scad
+      openscad --colorscheme "Tomorrow Night" --viewall --imgsize=$width,$height -o $exportPicture.png $exportPicture.scad
       mv $exportPicture.png $exportPicture
       rm $exportPicture.scad
       exit
